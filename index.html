@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Day Progress</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #000;
+            color: #fff;
+        }
+
+        #current-time {
+            font-size: 1.5em;
+            text-align: center;
+        }
+
+        #progress-bar-container, #tomorrow-progress-bar-container {
+            width: 80%;
+            margin: 20px auto;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        #progress-bar, #tomorrow-progress-bar {
+            width: 0;
+            height: 20px;
+            text-align: center;
+            line-height: 20px;
+            color: white;
+        }
+
+        #progress-bar {
+            background-color: #2196F3; /* Blue color for the progress bar */
+        }
+
+        #tomorrow-progress-bar {
+            background-color: #FF9800; /* Orange color for the tomorrow progress bar */
+        }
+
+        .time-left {
+            text-align: center;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div id="current-time"></div>
+    <h1>Day Progress</h1>
+    <div id="progress-bar-container">
+        <div id="progress-bar">0%</div>
+        <div id="progress-time-left" class="time-left">Time Left: 00:00:00</div>
+    </div>
+
+    <h2>Time Left Until Tomorrow 9 AM IST</h2>
+    <div id="tomorrow-progress-bar-container">
+        <div id="tomorrow-progress-bar">0%</div>
+        <div id="tomorrow-progress-time-left" class="time-left">Time Left: 00:00:00</div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const currentTimeElement = document.getElementById('current-time');
+            const progressBar = document.getElementById('progress-bar');
+            const progressBarTimeLeft = document.getElementById('progress-time-left');
+            const tomorrowProgressBar = document.getElementById('tomorrow-progress-bar');
+            const tomorrowProgressBarTimeLeft = document.getElementById('tomorrow-progress-time-left');
+            const totalSecondsInDay = 24 * 60 * 60; // Total seconds in a day
+            const totalSecondsUntilTomorrow = (24 * 60 * 60) + (9 * 60 * 60); // 9 AM IST tomorrow
+            const updateInterval = 1000; // Update every second
+
+            function formatTimeLeft(seconds) {
+                const hours = Math.floor(seconds / 3600);
+                const minutes = Math.floor((seconds % 3600) / 60);
+                const remainingSeconds = seconds % 60;
+                return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
+            }
+
+            function updateClock() {
+                const currentTime = new Date().toLocaleTimeString('en-IN', { timeZone: 'Asia/Kolkata' });
+                currentTimeElement.textContent = `Current Time: ${currentTime}`;
+            }
+
+            function updateProgressBar() {
+                const currentTime = new Date();
+                const currentSeconds = currentTime.getHours() * 3600 + currentTime.getMinutes() * 60 + currentTime.getSeconds();
+                const progressPercentage = (currentSeconds / totalSecondsInDay) * 100;
+                progressBar.style.width = `${progressPercentage.toFixed(3)}%`;
+                progressBar.textContent = `${progressPercentage.toFixed(3)}%`;
+                const timeLeft = totalSecondsInDay - currentSeconds;
+                progressBarTimeLeft.textContent = `Time Left: ${formatTimeLeft(timeLeft)}`;
+            }
+
+            function updateTomorrowProgressBar() {
+                const currentTime = new Date();
+                const currentSeconds = currentTime.getHours() * 3600 + currentTime.getMinutes() * 60 + currentTime.getSeconds();
+                const timeLeftUntilTomorrow = totalSecondsUntilTomorrow - currentSeconds;
+                const progressPercentage = ((totalSecondsUntilTomorrow - timeLeftUntilTomorrow) / totalSecondsUntilTomorrow) * 100;
+                tomorrowProgressBar.style.width = `${progressPercentage.toFixed(3)}%`;
+                tomorrowProgressBar.textContent = `${progressPercentage.toFixed(3)}%`;
+                tomorrowProgressBarTimeLeft.textContent = `Time Left: ${formatTimeLeft(timeLeftUntilTomorrow)}`;
+            }
+
+            // Initial updates
+            updateClock();
+            updateProgressBar();
+            updateTomorrowProgressBar();
+
+            // Update the clock, progress bars, and time left every second
+            setInterval(updateClock, updateInterval);
+            setInterval(updateProgressBar, updateInterval);
+            setInterval(updateTomorrowProgressBar, updateInterval);
+        });
+    </script>
+</body>
+</html>
