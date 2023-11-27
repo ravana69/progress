@@ -69,7 +69,6 @@
             const tomorrowProgressBar = document.getElementById('tomorrow-progress-bar');
             const tomorrowProgressBarTimeLeft = document.getElementById('tomorrow-progress-time-left');
             const totalSecondsInDay = 24 * 60 * 60; // Total seconds in a day
-            const totalSecondsUntilTomorrow = (24 * 60 * 60) + (9 * 60 * 60); // 9 AM IST tomorrow
             const updateInterval = 1000; // Update every second
 
             function formatTimeLeft(seconds) {
@@ -97,11 +96,20 @@
             function updateTomorrowProgressBar() {
                 const currentTime = new Date();
                 const currentSeconds = currentTime.getHours() * 3600 + currentTime.getMinutes() * 60 + currentTime.getSeconds();
-                const timeLeftUntilTomorrow = totalSecondsUntilTomorrow - currentSeconds;
-                const progressPercentage = ((totalSecondsUntilTomorrow - timeLeftUntilTomorrow) / totalSecondsUntilTomorrow) * 100;
-                tomorrowProgressBar.style.width = `${progressPercentage.toFixed(3)}%`;
-                tomorrowProgressBar.textContent = `${progressPercentage.toFixed(3)}%`;
-                tomorrowProgressBarTimeLeft.textContent = `Time Left: ${formatTimeLeft(timeLeftUntilTomorrow)}`;
+                const tomorrow9AMSeconds = 9 * 60 * 60; // 9 AM IST tomorrow
+                const timeLeftUntilTomorrow = tomorrow9AMSeconds - currentSeconds;
+
+                if (timeLeftUntilTomorrow > 0) {
+                    const progressPercentage = ((tomorrow9AMSeconds - timeLeftUntilTomorrow) / tomorrow9AMSeconds) * 100;
+                    tomorrowProgressBar.style.width = `${progressPercentage.toFixed(3)}%`;
+                    tomorrowProgressBar.textContent = `${progressPercentage.toFixed(3)}%`;
+                    tomorrowProgressBarTimeLeft.textContent = `Time Left: ${formatTimeLeft(timeLeftUntilTomorrow)}`;
+                } else {
+                    // If it's already past 9 AM, reset progress bar
+                    tomorrowProgressBar.style.width = '0%';
+                    tomorrowProgressBar.textContent = '0%';
+                    tomorrowProgressBarTimeLeft.textContent = 'Time Left: 00:00:00';
+                }
             }
 
             // Initial updates
